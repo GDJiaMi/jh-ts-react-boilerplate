@@ -32,6 +32,10 @@ module.exports = {
           value: 'stateless',
         },
         {
+          name: '纯Styled Components 组件',
+          value: 'pure-styled',
+        },
+        {
           name: 'Styled Components 组件',
           value: 'styled',
         },
@@ -66,12 +70,33 @@ module.exports = {
       },
     },
     {
+      when(answers) {
+        return answers.type == 'pure-styled'
+      },
+      type: 'input',
+      name: 'decorateComponent',
+      message: '输入要进行扩展的元素名',
+      default: data => data.name.toLowerCase(),
+      validate: value => {
+        if (/.+/.test(value)) {
+          return true
+        }
+        return '必须输入扩展元素名'
+      },
+    },
+    {
+      when(answers) {
+        return answers.type !== 'pure-styled'
+      },
       type: 'confirm',
       name: 'i18n',
       default: true,
       message: '是否支持i18n?: ',
     },
     {
+      when(answers) {
+        return answers.type !== 'pure-styled'
+      },
       type: 'recursive',
       message: '继续添加props?: ',
       name: 'props',
@@ -135,6 +160,9 @@ module.exports = {
       case 'styled':
         componentTemplate = path.resolve(__dirname, './styled.tsx.hbs')
         break
+      case 'pure-styled':
+        componentTemplate = path.resolve(__dirname, './pure-styled.hbs')
+        break
       case 'class':
         componentTemplate = path.resolve(__dirname, './es6.tsx.hbs')
         break
@@ -158,7 +186,9 @@ module.exports = {
       })
     }
 
-    data.defaultProps = data.props.filter(item => item.default !== '')
+    if (data.props) {
+      data.defaultProps = data.props.filter(item => item.default !== '')
+    }
 
     return actions
   },
