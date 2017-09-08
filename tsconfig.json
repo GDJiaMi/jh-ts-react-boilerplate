@@ -9,6 +9,7 @@
     "jsx": "react",
     "moduleResolution": "node",
     "rootDir": "src",
+    "importHelpers": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,

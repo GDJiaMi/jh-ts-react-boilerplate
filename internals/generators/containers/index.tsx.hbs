@@ -3,6 +3,7 @@
  * {{ description }}
  */
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { observer } from 'mobx-react'
 {{#if hasRoute}}
 import { withRouter, RouteComponentProps } from 'react-router'
@@ -59,6 +60,9 @@ class {{ pascalCase name }} extends React.Component<Props> {
   public render() {
     return (
       <div className={this.props.className}>
+        <Helmet>
+          <title>{{ pascalCase name }}</title>
+        </Helmet>
         {{#if i18n}}
         <FormattedMessage {...messages.header} />
         {{else}}
