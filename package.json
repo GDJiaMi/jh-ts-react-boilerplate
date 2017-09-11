@@ -12,7 +12,7 @@
     "build": "cross-env NODE_ENV=production node internals/scripts/build",
     "analyze": "cross-env NODE_ENV=production node internals/scripts/analyze",
     "build:dll": "cross-env NODE_ENV=development node internals/scripts/dependencies.js",
-    "build:serve": "serve build/",
+    "build:serve": "cd build && serve --open",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint:ts": "tslint -c tslint.json \"src/**/*.ts?(x)\"",
     "lint:css": "stylelint \"src/@(components|containers)/**/*.ts?(x)\"",
