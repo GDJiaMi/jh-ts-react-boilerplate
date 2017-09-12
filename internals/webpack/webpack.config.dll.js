@@ -56,6 +56,7 @@ module.exports = exports = webpackBaseConfig({
       name: '[name]',
       path: path.join(DLL_PATH, '[name].json'),
     }),
+    new webpack.DefinePlugin(env.stringified),
   ],
   performance: {
     hints: false,
