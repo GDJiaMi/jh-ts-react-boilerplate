@@ -47,11 +47,7 @@ module.exports = options => {
         'react-native': 'react-native-web',
       },
       plugins: [
-        // Prevents users from importing files from outside of src/ (or node_modules/).
-        // This often causes confusion because we only process files within src/ with babel.
-        // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
-        // please link the files into your node_modules/ and let module-resolution kick in.
-        // Make sure your source files are compiled, as they will not be processed in any way.
+        // 阻止导入src或node_modules之外的模块
         new ModuleScopePlugin(paths.appSrc),
       ],
     },
@@ -113,7 +109,8 @@ module.exports = options => {
         // smaller than specified limit in bytes as data URLs to avoid requests.
         // A missing `test` is equivalent to a match.
         {
-          test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+          test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.svg$/],
+          exclude: [/\.icon\.svg$/],
           loader: require.resolve('url-loader'),
           options: {
             limit: 10000,
@@ -122,7 +119,7 @@ module.exports = options => {
         },
         // svg sprite
         {
-          test: /\.svg$/,
+          test: /\.icon\.svg$/,
           use: [
             {
               loader: require.resolve('svg-sprite-loader'),

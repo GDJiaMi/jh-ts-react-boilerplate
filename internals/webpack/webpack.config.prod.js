@@ -9,6 +9,7 @@ const ManifestPlugin = require('webpack-manifest-plugin')
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin')
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const webpackBaseConfig = require('./webpack.config.base')
 const paths = require('./paths')
 const getClientEnvironment = require('./env')
@@ -19,6 +20,7 @@ const publicPath = paths.servedPath
 // Some apps do not use client-side routing with pushState.
 // For these, "homepage" can be set to "." to enable relative asset paths.
 const shouldUseRelativeAssetPaths = publicPath === './'
+const shouldGenerateSourceMap = process.env.GENERATE_SOURCEMAP === 'true'
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
@@ -51,7 +53,7 @@ module.exports = webpackBaseConfig({
   // 不要尝试继续, 如果出现任何异常
   bail: true,
   // 生成生产环境的sourcemap文件, 尽管生成比较慢,但是结果更详细
-  devtool: 'source-map',
+  devtool: shouldGenerateSourceMap ? 'source-map' : null,
   // 在生成环境只加入polyfills和源代码
   entry: [require.resolve('./polyfills'), paths.appIndexJs],
   output: {
@@ -75,9 +77,10 @@ module.exports = webpackBaseConfig({
       include: paths.appSrc,
       use: [
         {
-          loader: require.resolve('awesome-typescript-loader'),
+          loader: require.resolve('ts-loader'),
           options: {
-            silent: process.argv.indexOf("--json") !== -1,
+            silent: process.argv.indexOf('--json') !== -1,
+            transpileOnly: true,
           },
         },
       ],
@@ -108,7 +111,7 @@ module.exports = webpackBaseConfig({
                 options: {
                   importLoaders: 1,
                   minimize: true,
-                  sourceMap: true,
+                  sourceMap: shouldGenerateSourceMap,
                 },
               },
               {
@@ -131,8 +134,8 @@ module.exports = webpackBaseConfig({
               },
             ],
           },
-          extractTextPluginOptions
-        )
+          extractTextPluginOptions,
+        ),
       ),
       // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
     },
@@ -161,6 +164,11 @@ module.exports = webpackBaseConfig({
         minifyURLs: true,
       },
     }),
+    // 在另一个进程中检查Typescript类型
+    new ForkTsCheckerWebpackPlugin({
+      // 禁止tslint检查
+      tslint: false,
+    }),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
     // It is absolutely essential that NODE_ENV was set to production here.
@@ -178,7 +186,7 @@ module.exports = webpackBaseConfig({
       output: {
         comments: false,
       },
-      sourceMap: true,
+      sourceMap: shouldGenerateSourceMap,
     }),
     // Note: this won't work without ExtractTextPlugin.extract(..) in `loaders`.
     new ExtractTextPlugin({

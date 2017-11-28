@@ -10,6 +10,7 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin')
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin')
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const chalk = require('chalk')
 const webpackBaseConfig = require('./webpack.config.base')
 const webpackDllConfig = require('./webpack.config.dll')
@@ -31,8 +32,8 @@ const manifestPath = path.resolve(DLL_PATH, DLL_NAME + '.json')
 if (!fs.existsSync(manifestPath)) {
   console.error(
     `${chalk.bgRed('[Webpack Dev]')}: Dll manifest(${chalk.blue(
-      manifestPath
-    )}) 文件不存在, 请运行'yarn build:dll'`
+      manifestPath,
+    )}) 文件不存在, 请运行'yarn dll'`,
   )
   process.exit(0)
 }
@@ -67,7 +68,7 @@ module.exports = webpackBaseConfig({
   // The first two entry points enable "hot" CSS and auto-refreshes for JS.
   entry: [
     // 支持react热加载
-    "react-hot-loader/patch",
+    'react-hot-loader/patch',
     // 包含一个客户端, 用于连接到webpackDevSever, 用于支持热更新
     // 下面这行代码相当于:
     // require.resolve('webpack-dev-server/client') + '?/',
@@ -103,9 +104,14 @@ module.exports = webpackBaseConfig({
     {
       test: /\.(ts|tsx)$/,
       include: paths.appSrc,
-      loaders: [
+      use: [
         require.resolve('react-hot-loader/webpack'),
-        require.resolve('awesome-typescript-loader'),
+        {
+          loader: require.resolve('ts-loader'),
+          options: {
+            transpileOnly: true,
+          },
+        },
       ],
     },
 
@@ -152,6 +158,11 @@ module.exports = webpackBaseConfig({
       inject: true,
       templateContent: templateContent(),
       alwaysWriteToDisk: true,
+    }),
+    // 在另一个进程中检查Typescript类型
+    new ForkTsCheckerWebpackPlugin({
+      // 禁止tslint检查
+      tslint: false,
     }),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
