@@ -11,8 +11,7 @@
     "start": "cross-env NODE_ENV=development node internals/scripts/start.js",
     "build": "cross-env NODE_ENV=production node internals/scripts/build",
     "analyze": "cross-env NODE_ENV=production node internals/scripts/analyze",
-    "dll":
-      "cross-env NODE_ENV=development node internals/scripts/dependencies.js",
+    "dll": "cross-env NODE_ENV=development node internals/scripts/dependencies.js",
     "serve": "http-server build -g -o",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint:ts": "tslint -c tslint.json \"src/**/*.ts?(x)\"",
@@ -24,13 +23,21 @@
     "postuninstall": "npm run dll"
   },
   "lint-staged": {
-    "*.ts?(x)": ["prettier --write", "git add"]
+    "*.ts?(x)": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/carney520/jh-ts-react-boilerplate.git"
   },
-  "keywords": ["react", "typescript", "mobx", "boilerplate"],
+  "keywords": [
+    "react",
+    "typescript",
+    "mobx",
+    "boilerplate"
+  ],
   "author": "ivan",
   "license": "MIT",
   "bugs": {
@@ -116,7 +123,10 @@
   },
   "allowedEnvs": [],
   "dllPlugin": {
-    "exclude": ["/^@types/", "sanitize.css"],
+    "exclude": [
+      "/^@types/",
+      "sanitize.css"
+    ],
     "include": []
   }
 }
