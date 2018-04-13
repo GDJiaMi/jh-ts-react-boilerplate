@@ -4,6 +4,7 @@ const path = require('path')
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin')
 const omit = require('lodash/omit')
 const paths = require('./paths')
+const webpack = require('webpack')
 const svgoConfig = require('./svgo.config.json')
 
 // 这个是基本配置, development和production都会继承它
@@ -141,7 +142,14 @@ module.exports = options => {
         // Remember to add the new extension(s) to the "url" loader exclusion list.
       ].concat(options.rules || []),
     },
-    plugins: options.plugins,
+    plugins: [
+      new webpack.optimize.CommonsChunkPlugin({
+        // name: 'main', // 指定公共 bundle 的名称。
+        minChunks: 2,
+        async: true,
+        children: true,
+      }),
+    ].concat(options.plugins),
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.
     node: {
